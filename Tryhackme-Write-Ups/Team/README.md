@@ -22,3 +22,31 @@ Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
 We see that we have ftp open so lets try to login with anonymous and leave password blank. But we have noo success. Next comes the web page on port 80.
 ![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/team_web.png?raw=true)
 
+It looks like a static page - nothing interesting there. Gobuster didn't find any directories but found one subdomain -dev.team.thm .
+```
+===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Domain:     team.thm
+[+] Threads:    10
+[+] Timeout:    1s
+[+] Wordlist:   /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+===============================================================
+2022/10/07 07:11:48 Starting gobuster in DNS enumeration mode
+===============================================================
+Found: dev.team.thm
+===============================================================
+2022/10/07 07:20:56 Finished
+===============================================================
+
+```
+We need to add it to the /etc/hosts as well to acess it.
+```
+echo "\n10.10.162.244 dev.team.thm" >> /etc/hosts
+```
+Now let's see what is on this page.
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/dev_team_web.png?raw=true)
+
+Only thing here is link when we click it it redirects us to dev.team.thm/script.php?page=teamshare.php
+
