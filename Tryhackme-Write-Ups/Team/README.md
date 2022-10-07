@@ -4,3 +4,4 @@ We will first add host team.thm to our /etc/hosts file.
 ```
 echo "\n10.10.162.244 team.thm" >> /etc/hosts
 ```
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/team_web.png?raw=true)
