@@ -1,4 +1,4 @@
-Hello this is my first write up I hope you will like it. For any questions or whatever message u can find me on Twitter https://twitter.com/Vojtech1337 . 
+Hello this is my first write up fot the room Team from THM -> https://tryhackme.com/room/teamcw . I hope you will like it. For any questions or whatever message u can find me on Twitter https://twitter.com/Vojtech1337 . 
 We will start with adding host to the /etc/hosts file and after that we will do all ports nmap scan.
 ```
 echo "\n10.10.162.244 team.thm" >> /etc/hosts
