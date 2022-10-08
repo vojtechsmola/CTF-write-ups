@@ -116,12 +116,14 @@ It will return many files but the most important one is /etc/ssh/sshd_config whi
 ![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/lfi_sshkey.png?raw=true)
 
 Now we only need to copy the key to the file(without the hashes on the left) and chmod 600 and then we can simply use ssh command 
-to connect to the machine as dale.
+to connect to the machine as dale and cat the flag.
 ```
 └─# ssh dale@team.thm -i id_rsa
 Last login: Mon Jan 18 10:51:32 2021
 dale@TEAM:~$ id
 uid=1000(dale) gid=1000(dale) groups=1000(dale),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),108(lxd),113(lpadmin),114(sambashare),1003(editors)
+dale@TEAM:~$ cat user.txt 
+THM{6Y0TXH*****}
 ```
 
 Starting privilege escalation, we do simple sudo -l to see which commands we can run as different users and look at what the script does.
