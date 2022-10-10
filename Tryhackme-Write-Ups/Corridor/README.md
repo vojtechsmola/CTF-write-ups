@@ -46,5 +46,7 @@ cfcd208495d565ef66e7dff9f98764da
 
 Now we only need to visit the page and we see the flag.
 
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Corridor/images/flag.png?raw=true)
+
 Thank you so much for reading this write up. If you have any suggestions, questions or just want to play CTFs with someone reach me out 
 on Twitter or wherever else you can find me.
