@@ -41,7 +41,6 @@ have id of 0. I used basic command to get md5 hash of number 0.
 ```
 # echo -n "0" | md5sum
 cfcd208495d565ef66e7dff9f98764da
-
 ```
 
 Now we only need to visit the page and we see the flag.
