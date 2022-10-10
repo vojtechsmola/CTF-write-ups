@@ -4,13 +4,13 @@ is about IDOR I'll go visit the web page right away.
 
 When we visit the page we see bunch of doors. 
 
--- picture -- 
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Corridor/images/doors.png?raw=true)
 
 If we move our mouse over we can see it that we can click it or we can see
 different directory on the left down. Lets' click arbitrary doors. It takes us on a page with nothing on it.
 The directory name looks awfully lot like a md5hash. Trying to crack it in crackstation we get number.
 
--- crackstation --
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Corridor/images/crackstation.png?raw=true)
 
 Time to crack all the other hashes as well. You can either click it one by one or you can get all of them
 if you press c+u on the default landing page. Then copy all the hashes. U can scrape the hashes with ```sed``` and ```awk```
@@ -33,3 +33,18 @@ d3d9446802a44259755d38e6d163e820
 c20ad4d76fe97759aa27a0c99bff6710
 c51ce410c124a10e0db5e4b97fc2af39
 ```
+
+When you put all these hashes in crackstation it will crack it into numbers. When you find IDOR vulnerability 
+you can try to get access to things that should only admin see. Admins/roots and high privileged users most of the times
+have id of 0. I used basic command to get md5 hash of number 0.
+
+```
+# echo -n "0" | md5sum
+cfcd208495d565ef66e7dff9f98764da
+
+```
+
+Now we only need to visit the page and we see the flag.
+
+Thank you so much for reading this write up. If you have any suggestions, questions or just want to play CTFs with someone reach me out 
+on Twitter or wherever else you can find me.
