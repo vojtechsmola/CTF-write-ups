@@ -10,7 +10,7 @@ If we move our mouse over we can see it that we can click it or we can see
 different directory on the left down. Lets' click arbitrary doors. It takes us on a page with nothing on it.
 The directory name looks awfully lot like a md5hash. Trying to crack it in crackstation we get number.
 
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Corridor/images/crackstation.png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Corridor-Write-Up/images/crackstation.png?raw=true)
 
 Time to crack all the other hashes as well. You can either click it one by one or you can get all of them
 if you press c+u on the default landing page. Then copy all the hashes. U can scrape the hashes with ```sed``` and ```awk```
