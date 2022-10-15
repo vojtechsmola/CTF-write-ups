@@ -21,7 +21,7 @@ Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 We see that we have ftp open so lets try to login with anonymous and leave password blank. But we have noo success. Next comes the web page on port 80.
 
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/team_web.png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Team-Write-Up/images/team_web.png?raw=true)
 
 It looks like a static page - nothing interesting there. Gobuster didn't find any directories but found one subdomain -dev.team.thm .
 ```
@@ -47,7 +47,7 @@ We need to add it to the /etc/hosts as well to acess it.
 echo "\n10.10.162.244 dev.team.thm" >> /etc/hosts
 ```
 Now let's see what is on this page.
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/dev_team_web.png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Team-Write-Up/images/dev_team_web.png?raw=true)
 
 Only thing here is link when we click it it redirects us to dev.team.thm/script.php?page=teamshare.php . 
 This URL with page parameter immediately looks vulnerable to LFI attack. The easiest way to start testing this vulnerability is putting 
@@ -113,7 +113,7 @@ ID           Response   Lines    Word       Chars       Payload
 ```
 It will return many files but the most important one is /etc/ssh/sshd_config which contains id_rsa key.
 
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/lfi_sshkey.png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Team-Write-Up/images/lfi_sshkey.png?raw=true)
 
 Now we only need to copy the key to the file(without the hashes on the left) and chmod 600 and then we can simply use ssh command 
 to connect to the machine as dale and cat the flag.
@@ -127,7 +127,7 @@ THM{6Y0TXH*****}
 ```
 
 Starting privilege escalation, we do simple sudo -l to see which commands we can run as different users and look at what the script does.
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/Team/images/ssh_sudo-l.png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Team-Write-Up/images/ssh_sudo-l.png?raw=true)
 
 If you don't know what any of these commands do u can use linux documentation. What read does here is putting out input into error
 variable and then putting it straight into bash. This leads to command execution with simple /bin/bash.
