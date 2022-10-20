@@ -73,7 +73,7 @@ Nmap done: 1 IP address (1 host up) scanned in 139.85 seconds
 
 There are two ports open it is 22 which is ssh and 80 which is http and port 3000 which is filtered. Not much we can do with the ssh as the version doesn't have any known vulnerabilities. So let's visit the web page. 
 
-WEB IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Opensource/images/opensource_web.png?raw=true)
 
 We see that there is download button we we're gonna download the source for the page. It's running python so we can take a guess that it 
 will be flask application. As this is `.git` let's see which branches are there with the command `git branch`. There are two `dev` and 
