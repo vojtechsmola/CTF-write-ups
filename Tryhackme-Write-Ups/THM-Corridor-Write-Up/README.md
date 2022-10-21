@@ -1,4 +1,4 @@
-Hello and welcome back to yet another write up. This will be write up for Tryhackme room Corridor (https://tryhackme.com/room/corridor).
+Hello and welcome back to yet another write up. This will be write up for Tryhackme room Corridor -> https://tryhackme.com/room/corridor.
 As the description suggests it is about IDOR vulnerability. Normally, I would do nmap scan but since this challenge
 is about IDOR I'll go visit the web page right away. 
 
