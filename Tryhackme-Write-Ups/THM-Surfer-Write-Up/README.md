@@ -1,4 +1,4 @@
-Hello and welcome back to my new write up. This one is on Tryhackme room called Surfer. It is rated as medium
+Hello and welcome back to my new write up. This one is on Tryhackme room called Surfer (https://tryhackme.com/room/surfer). It is rated as medium
 but really is easy if you know even little about SSRF. Let's jump right in.
 
 We will start with nmap scan.
