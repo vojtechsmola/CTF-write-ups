@@ -37,25 +37,25 @@ which means that it runs php and `-o` to save it into file for later. The comman
 
 Now let's visit the web page. 
 
-------- web page login IMAGE -------
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Surfer-Write-Up/images/surfer_web_login.png?raw=true)
 
 It's a login page but we don't have any credentials. But what we do have is suspicious disallowed entry in robots.txt. Let's look into that.
 
-------- web page ROBOTS IMAGE -------
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Surfer-Write-Up/images/surfer_web_robots.png?raw=true)
 
 There is a conversation between two people talking about credentials. Now we know the flag is hidden on internal server but we don't know exactly where and also user is supposedely using username as password. We could've guessed the credentials because it's just `admin:admin`. 
 
-ADMIN DASHBOARD IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Surfer-Write-Up/images/surfer_web_admin.png?raw=true)
 
 It is some dashboard about some business. Only one feature is available - export2pdf.
 If we click it it generates pdf for something on localhost. 
 
-------- export to pdf IMAGE -------
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Surfer-Write-Up/images/surfer_export_pdf.png?raw=true)
 
 Can we somehow change the url which it uses for the report generation ? 
 Time to start burpsuite and catch the export request. 
 
-BURP roginal IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Surfer-Write-Up/images/surfer_burp_original.png?raw=true)
 
 It uses the url as parameter which we can easily change.
 Let's see what did feroxbuster give us, hopefully place with a flag. 
@@ -79,10 +79,10 @@ Interesting directory here is `internal` with php page `admin.php`. If we try to
 Let's try to put it into the URL parameter to see if we can
 access it that way. We only need to change the directory and page we are exporting to pdf.
 
-BURP CHANGED IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Surfer-Write-Up/images/surf_burp_changed.png?raw=true)
 
 After that forward the request and we get a flag. 
 
-FLAG IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Surfer-Write-Up/images/surfer_burp_flag.png?raw=true)
 
 And that's a wrap.
