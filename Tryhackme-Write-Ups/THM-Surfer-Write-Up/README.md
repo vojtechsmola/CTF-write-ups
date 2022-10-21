@@ -86,3 +86,5 @@ After that forward the request and we get a flag.
 ![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/Tryhackme-Write-Ups/THM-Surfer-Write-Up/images/surfer_burp_flag.png?raw=true)
 
 And that's a wrap.
+
+Thank you so much for reading this write up. If you have any suggestions, questions or just want to play CTFs with someone reach me out on Twitter or wherever else you can find me. https://twitter.com/Vojtech1337
