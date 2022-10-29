@@ -1,7 +1,7 @@
 Hello and welcome back to another write up. This one will be for web challenge Spookifier from Hacktheboo ctf. 
 We start by visiting web page.
 
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBoo-CTF/Spoofkifier/images/spookiefier_web.png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBoo-CTF/Spoofkifier/images/spookifier_web.png?raw=true)
 
 We see input field. First thing I will try is SSTI with the following payload: 
 `${7*7}` and it works.
