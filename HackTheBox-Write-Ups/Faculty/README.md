@@ -49,10 +49,14 @@ There are many pages but for now let's focus on the default one. If I try to gue
 we will workaround that and try sql injection. With the simpliest `'or 1=1-- -` we get in. We also get PHPSESSID cookie.
 There is nothing interesting. So time to move to admin directory which was found from feroxbuster. 
 
-FACULTY ADMIN IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_web_admin.png?raw=true)
 
 It is some type of management system. First thing that I noticed is the export functionality because these aren't common
-in ctfs if they don't have a purpose. It creates pdf and saves it on the server. Let's download it and find out if there isn't 
+in ctfs if they don't have a purpose. It creates pdf and saves it on the server. 
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_export.png?raw=true)
+
+Let's download it and find out if there isn't 
 any interesting info about how it is created. For this I used exiftool but there many ways to find this out.
 
 ```
@@ -88,26 +92,26 @@ issue(https://github.com/mpdf/mpdf/issues/356) talking about LFI vulnerability c
 This looks useful to us. Now we will catch the burpsuite request and change the contents of the request to this payload. 
 We see that the parameter payload gets base64 encoded before it gets send. 
 
-BURP IMAGE 1
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_burp1.png?raw=true)
 
 This can be done numerous ways - cyberchef, commandline
 or in burp itself. The final request looks like this:
 
-BURP IMAGE 2
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_burp2.png?raw=true)
 
 At first sight it looks like it didn't work but when we look at the attachements on the left there is a passwd which is the file 
 we wanted. 
 
-PDF IMAGE 1
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_pdf1.png?raw=true)
 
 Now using the same method but changing the file name in payload we will get the source code for the application. We will start with `index.php`. 
 
-SOURCE 1 IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_source1.png?raw=true)
 
 Now we will download the `login.php` (found in feroxbuster on in the `index.php` file). This one shows 
 `include('./db_connect.php');` this looks promising as it is likely to leak some creadentials and as we find out it does. 
 
-DB CONNECT IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_db_connect.png?raw=true)
 
 We have now have password which we can try to use with ssh. But to which user does it belong to ? We have users
 that are on the box in passwd file we got earlier. Let's grep for users with `/bin/bash` shell.
