@@ -24,7 +24,7 @@ We have two open ports - 80 which is http and 22 which is ssh. There is not much
 on port 80 for now. Nmap shows us hostname faculty.htb so we will add to our `/etc/hosts` file with command 
 `echo "10.10.11.169 faculty.htb" >> /etc/hosts`. Now let's visit the page itself. 
 
-FACULTY WEB IMAGE
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_web.png?raw=true)
 
 We are presented with login page that runs php. Now we will start feroxbuster
 to brute force directories. With knowledge that it is php we will run it with flag that specifies just that. 
