@@ -92,12 +92,12 @@ issue(https://github.com/mpdf/mpdf/issues/356) talking about LFI vulnerability c
 This looks useful to us. Now we will catch the burpsuite request and change the contents of the request to this payload. 
 We see that the parameter payload gets base64 encoded before it gets send. 
 
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_burp1.png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_burp_1.png?raw=true)
 
 This can be done numerous ways - cyberchef, commandline
 or in burp itself. The final request looks like this:
 
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_burp2.png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_burp_2.png?raw=true)
 
 At first sight it looks like it didn't work but when we look at the attachements on the left there is a passwd which is the file 
 we wanted. 
