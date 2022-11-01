@@ -54,7 +54,7 @@ There is nothing interesting. So time to move to admin directory which was found
 It is some type of management system. First thing that I noticed is the export functionality because these aren't common
 in ctfs if they don't have a purpose. It creates pdf and saves it on the server. 
 
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_export.png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Faculty/images/faculty_pdf_export.png?raw=true)
 
 Let's download it and find out if there isn't 
 any interesting info about how it is created. For this I used exiftool but there many ways to find this out.
