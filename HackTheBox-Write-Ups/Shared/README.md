@@ -39,15 +39,15 @@ Nmap done: 1 IP address (1 host up) scanned in 372.49 seconds
 First things first let's add shared.htb to our host file `echo '10.10.11.172 shared.htb' >> /etc/hosts`
 When we visit this page it redirects us to https version of the site. 
 
-IMG1
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG1.png?raw=true)
 
 Here we can view certificate for potential leaks of other hostnames. 
 
-IMG2
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG2.png?raw=true)
 
 It uses wildcard which so I'll start fuzzing for other subdomains. For this I'll use wfuzz:
 ```
-└─# wfuzz -u https://10.10.11.172 -H "Host: FUZZ.shared.htb" -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt 
+# wfuzz -u https://10.10.11.172 -H "Host: FUZZ.shared.htb" -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt 
 * Wfuzz 3.1.0 - The Web Fuzzer                         
 
 Target: https://10.10.11.172/
@@ -65,10 +65,11 @@ ID           Response   Lines    Word       Chars       Payload
 000000022:   301        7 L      11 W       169 Ch      "pop3"                                                                                                                                                                      
 000000021:   301        7 L      11 W       169 Ch      "ns3"          
 ```
+
 And then add flag `--hw 11` to hide all those redirects.
 
 ```
-└─# wfuzz -u https://10.10.11.172 -H "Host: FUZZ.shared.htb" -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt --hw 11
+# wfuzz -u https://10.10.11.172 -H "Host: FUZZ.shared.htb" -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt --hw 11
 ********************************************************
 * Wfuzz 3.1.0 - The Web Fuzzer                         *
 ********************************************************
@@ -88,37 +89,38 @@ I'll keep the list of the ones that I find in mind if I don't find
 anything on `https://shared.htb/`. When we visit the site we see that it loads index.php so it is a php web application for some 
 shop.
 
-IMG3
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG3.png?raw=true)
 
 Let's see how it works when I try to buy something. For this I spin up burpsuite. If we click proceed to checkout
 this is what the request looks like.
 
-IMG4
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG4.png?raw=true)
 
 We see that the cookie decodes to JSON. I'll send it to repeater and try to do sql injection. It doesn't have to be url encoded.
 With `' -- -` it still works the same. This signalizes sql injection. Time to move to union select and find columns that we can use. After a few tries and changing the product code I see that we can use column to exfiltrate data.
 
-IMG5
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG5.png?raw=true)
 
 After trying different payloads specific for different databases I found out that it uses Mysql - Mariadb.
 
-IMG6
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG6.png?raw=true)
 
 From this point I used payloads from this site with slight modifications.
 
-IMG7
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG7.png?raw=true)
 
-IMG8
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG8.png?raw=true)
 
-IMG9
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG9.png?raw=true)
 
-IMGx
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMGx.png?raw=true)
 
-IMG10
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG10.png?raw=true)
+
 
 We can now take the password hash and try to crack for example in crackstation. It works 
 
-IMG11
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Shared/images/IMG11.png?raw=true)
 
 Now let's login with ssh. And we are in. Looking around filesytem there is a script_review folder in /opt but it is
 empty. I'll run pspy if there isn't some cronjob doing something with or in this folder. 
@@ -198,7 +200,7 @@ INFO command result:
 ```
 
 ```
-└─# nc -lvnp 6379
+# nc -lvnp 6379
 Ncat: Version 7.92 ( https://nmap.org/ncat )
 Ncat: Listening on :::6379
 Ncat: Listening on 0.0.0.0:6379
