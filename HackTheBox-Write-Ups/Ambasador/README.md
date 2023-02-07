@@ -28,29 +28,29 @@ PORT     STATE SERVICE VERSION
 
 We see 4 ports open ssh, http, 3000 which we don't know what it is yet and 3306 which is mysql. Visiting webpage first:
 
-IMG1
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Ambassador/images/IMG1.png?raw=true)
 
 The website is just static web page. Running feroxbuster doesn't give us anything interesting. Moving on to the
 port 3000 we see instance of grafana:
 
-IMG2
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Ambassador/images/IMG2.png?raw=true)
 
 Grafana is so kind that it gives us version right away on the bottom of the page - v8.2.0. Searching for exploits for this version
 we find lfi - cve 2021-43798. https://www.exploit-db.com/exploits/50581
 
 Since it is just making request we can catch the one from website in burp and perform the lfi there:
 
-IMG3
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Ambassador/images/IMG3.png?raw=true)
 
 With this, we can look to common grafana files like grafana.ini which contains password:
 
-IMG4
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Ambassador/images/IMG4.png?raw=true)
 
 Looking through the grafana web interface, there isn't anything interesting except the .yaml config file which we can't 
 read from web interface. Searching for where this file is stored at we find that it is in `grafana/provisioning/datasources/mysql.yaml`.
 And that gives us another password when used as payload for our lfi. 
 
-IMG5
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Ambassador/images/IMG5.png?raw=true)
 
 Trying that for ssh doesn't work. Last thing we have is mysql on port 3306. Using the password and username grafan works:
 
@@ -130,7 +130,7 @@ consul  my-app
 Looking in searchsploit for exploits we find this:
 
 ```
-└─# searchsploit consul
+# searchsploit consul
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
  Exploit Title                                                                                                                                                                                             |  Path
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
