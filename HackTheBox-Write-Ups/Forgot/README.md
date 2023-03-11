@@ -37,7 +37,7 @@ Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
 
 After that we catch the request in burp:
 
-![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Forgot/images/IMG3png?raw=true)
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Forgot/images/IMG3.png?raw=true)
 
 And we get reset link on our python server:
 
