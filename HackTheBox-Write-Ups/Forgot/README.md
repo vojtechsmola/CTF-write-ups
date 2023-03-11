@@ -17,11 +17,11 @@ PORT   STATE SERVICE VERSION
 There are two ports open ssh and http. We see that the site is running python. Looking at the error when trying to visit site that surely doesn't
 exist we see familiar flask not found page. 
 
-IMG1
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Forgot/images/IMG1.png?raw=true)
 
 On the main page is login form. That is not vulnerable to sql injection.
 
-IMG2
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Forgot/images/IMG2.png?raw=true)
 
 Trying different usernames doesn't return different error when trying to log in meaning we can't do username enumeration based on error message.
 Looking at the source code there is username: robert-dev-87120 (this one is different for each htb player so people don't collide when playing the box).
@@ -37,7 +37,7 @@ Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
 
 After that we catch the request in burp:
 
-IMG3
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Forgot/images/IMG3png?raw=true)
 
 And we get reset link on our python server:
 
@@ -50,7 +50,7 @@ Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
 
 Now let's visit the link and change roberts password to whatever we want. Now we are in on the site. 
 
-IMG4
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Forgot/images/IMG4.png?raw=true)
 
 In navbar there are four things the last one being disabled. We can either enable it or just visit admin_tickets. But we get access denied. 
 
@@ -73,11 +73,11 @@ Connection: keep-alive
 There is a Varnish reverse proxy responsible for caching. It doesn't cache the default page as there is Age:0 in headers but `/static` gets cached. 
 We can send link through `/escalate` that admins click with /static and should save his cookie so we can view the ssh creds in the ticket.
 
-IMG5
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Forgot/images/IMG5.png?raw=true)
 
 We will wait some time so it doesn't cache our request without the admin cookie. 
 
-IMG6
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Forgot/images/IMG6.png?raw=true)
 
 And now we have creds for ssh: `diego:dCb#1!x0%gjq` and we can login:
 
