@@ -47,7 +47,7 @@ And it doesn't work. Next up we try access the webpage doesn't work we have to f
 # echo "10.10.11.186 metapress.htb" >> /etc/hosts
 ```
 
-IMG1
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/MetaTwo/images/IMG1.png?raw=true)
 
 When bruteforcing the directories it shows us that it is wordpress page:
 
